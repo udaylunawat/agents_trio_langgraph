@@ -10,21 +10,27 @@ class AQIQuery(BaseModel):
     llm_provider: str = Field(default="OpenRouter", description="LLM provider: OpenAI or OpenRouter")
     model_name: str = Field(default="minimax/minimax-m2:free", description="Model name to use")
     api_key: str = Field(..., description="API key for the selected provider")
+    aqi_file: str = Field(None, description="AQI data as a JSON string")
 
 def answer_aqi(payload: AQIQuery):
-    files = glob.glob(os.path.join("data","aqi","*.json"))
-    data = []
-    for fp in files:
-        with open(fp) as f:
-            data.append(json.load(f))
+    if payload.aqi_file:
+        # Load AQI data from the uploaded file content
+        rec = json.loads(payload.aqi_file)
+    else:
+        # Load AQI data from local files
+        files = glob.glob(os.path.join("data","aqi","*.json"))
+        data = []
+        for fp in files:
+            with open(fp) as f:
+                data.append(json.load(f))
 
-    # Find matching record
-    rec = next((r for r in data if r.get("city","").lower()==payload.city.lower() and r.get("date")==payload.date), None)
-    if not rec:
-        return {
-            "answer": f"No AQI record found for {payload.city} on {payload.date}. Try available files.",
-            "available": [os.path.basename(f) for f in files]
-        }
+        # Find matching record
+        rec = next((r for r in data if r.get("city","").lower()==payload.city.lower() and r.get("date")==payload.date), None)
+        if not rec:
+            return {
+                "answer": f"No AQI record found for {payload.city} on {payload.date}. Try available files.",
+                "available": [os.path.basename(f) for f in files]
+            }
 
     # Initialize LLM based on user selection
     llm = create_llm(payload.llm_provider, payload.model_name, payload.api_key)

@@ -12,10 +12,17 @@ class YTRequest(BaseModel):
     llm_provider: str = Field(default="OpenRouter", description="LLM provider: OpenAI or OpenRouter")
     model_name: str = Field(default="minimax/minimax-m2:free", description="Model name to use")
     api_key: str = Field(..., description="API key for the selected provider")
+    youtube_file: str = Field(None, description="YouTube data as a CSV string")
 
-def recommend_next(payload: YTRequest, path="data/youtube.csv"):
+def recommend_next(payload: YTRequest):
     try:
-        df = pd.read_csv(path)
+        if payload.youtube_file:
+            # Load YouTube data from the uploaded file content
+            import io
+            df = pd.read_csv(io.StringIO(payload.youtube_file))
+        else:
+            # Load YouTube data from local file
+            df = pd.read_csv("data/youtube.csv")
         df["score"] = df["likes"]*2 + df["views"]/100
         corpus = df["script"].fillna("").tolist()
         vec = TfidfVectorizer(stop_words="english")

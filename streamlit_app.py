@@ -50,8 +50,8 @@ tab1, tab2, tab3 = st.tabs(["AQI Agent", "PDF Agent", "YouTube Agent"])
 with tab1:
     st.header("AQI Agent")
     aqi_file = st.file_uploader("Upload AQI JSON", type="json")
-    aqi_city = st.text_input("City", "Delhi")
-    aqi_date = st.text_input("Date (ISO format)", "2025-10-23")
+    aqi_city = st.text_input("City", "Delhi", disabled=aqi_file is not None)
+    aqi_date = st.text_input("Date (ISO format)", "2025-10-23", disabled=aqi_file is not None)
     aqi_question = st.text_input("Question", "Is it safe to run outside?")
     if st.button("Query AQI", key="aqi_button"):
         if not api_key:
@@ -64,9 +64,11 @@ with tab1:
                     "model_name": model_name,
                     "api_key": api_key,
                     "aqi_file": aqi_file.read().decode("utf-8") if aqi_file else None,  # Send JSON content if uploaded
-                    "city": aqi_city if not aqi_file else None,  # Send city only if no file
-                    "date": aqi_date if not aqi_file else None  # Send date only if no file
+                    "city": "" if aqi_file else aqi_city,
+                    "date": "" if aqi_file else aqi_date
                 }
+                st.write("Payload being sent to backend:")
+                st.write(payload)
                 response = requests.post("http://localhost:8000/aqi/query", json=payload)
                 result = response.json()
                 st.write(result)
@@ -128,7 +130,8 @@ with tab3:
                     "llm_provider": llm_provider,
                     "model_name": model_name,
                     "api_key": api_key,
-                    "youtube_file": youtube_file.read().decode("utf-8") if youtube_file else None  # Send CSV content if uploaded
+                    "youtube_file": youtube_file.read().decode("utf-8") if youtube_file else None,  # Send CSV content if uploaded
+                    "youtube_file_present": youtube_file is not None
                 }
                 response = requests.post("http://localhost:8000/youtube/recommend", json=payload)
                 result = response.json()
