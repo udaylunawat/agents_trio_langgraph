@@ -1,0 +1,39 @@
+AGENT WORKFLOWS: FROM CHAINS TO CONVERSATIONAL AUTONOMOUS SYSTEMS
+
+Chapter 1: Understanding Agent Architectures
+
+Agent workflows represent a fundamental shift from traditional chain-based AI systems to autonomous, conversational systems that can adapt and make decisions in real-time.
+
+Traditional LLM Chains:
+- Predictable, linear execution paths
+- Static prompt templates
+- Limited adaptability to user context changes
+- Deterministic outputs for identical inputs
+
+Modern Agent Systems:
+- Dynamic decision-making based on available tools
+- Conversational memory and context awareness
+- Tool selection and execution based on user intent
+- Adaptive behavior patterns learned from interaction patterns
+
+Agent Tool Selection:
+Agents typically have access to multiple tools and must decide:
+1. Which tool(s) are relevant to the user's request
+2. What parameters to pass to each tool
+3. How to combine tool outputs into coherent responses
+4. When to ask for clarification vs. proceeding autonomously
+
+Chapter 2: Evaluating Agent Performance
+
+Key Metrics for Agent Evaluation:
+- Task Completion Rate: Percentage of user requests successfully fulfilled
+- Response Quality: Accuracy, helpfulness, and coherence of responses
+- Conversation Flow: Natural transitions between topics and states
+- Error Recovery: Ability to handle edge cases and unexpected inputs
+- Tool Usage Efficiency: Appropriate selection and combination of tools
+
+Common evaluation frameworks include:
+- Human-in-the-Loop Assessment
+- Automated Unit Tests
+- Conversation Simulation
+- Performance Benchmarks against human experts

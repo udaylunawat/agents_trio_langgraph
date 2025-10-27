@@ -1,0 +1,11 @@
+AI Agents Guide - Content for testing PDF RAG
+This PDF is a mini guide about AI agents.
+Agents use tools to answer questions grounded in data.
+
+RAG Systems
+RAG means retrieve relevant context and generate an answer.
+Evaluation should include citation checking for reliability.
+
+Building RAG Apps
+Chunking PDFs and semantic search are key components.
+Tools help agents perform complex tasks systematically.

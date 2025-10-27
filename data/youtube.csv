@@ -1,0 +1,6 @@
+title,script,likes,views
+"How to build a RAG app","We start with chunking PDFs and semantic search...",420,18000
+"Agent vs Chain: What to choose","Agents can route tools, chains are linear...",280,12000
+"YouTube hooks that work","Start with a question, add a bold claim...",510,35000
+"MLOps for GenAI","We discuss CI/CD, evals, tracing, and safety...",190,9000
+"Prompt engineering basics","System prompts, few-shot, structured outputs...",330,22000
