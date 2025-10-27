@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 
-st.title("Plan A — Micro Agents (AQI / PDFs / YouTube)")
+st.title("Micro Agents (AQI / PDFs / YouTube)")
 
 # Sidebar for LLM configuration
 st.sidebar.header("⚙️ LLM Configuration")
@@ -49,6 +49,7 @@ tab1, tab2, tab3 = st.tabs(["AQI Agent", "PDF Agent", "YouTube Agent"])
 
 with tab1:
     st.header("AQI Agent")
+    aqi_file = st.file_uploader("Upload AQI JSON", type="json")
     aqi_city = st.text_input("City", "Delhi")
     aqi_date = st.text_input("Date (ISO format)", "2025-10-23")
     aqi_question = st.text_input("Question", "Is it safe to run outside?")
@@ -58,12 +59,13 @@ with tab1:
         else:
             try:
                 payload = {
-                    "city": aqi_city,
-                    "date": aqi_date,
                     "question": aqi_question,
                     "llm_provider": llm_provider,
                     "model_name": model_name,
-                    "api_key": api_key
+                    "api_key": api_key,
+                    "aqi_file": aqi_file.read().decode("utf-8") if aqi_file else None,  # Send JSON content if uploaded
+                    "city": aqi_city if not aqi_file else None,  # Send city only if no file
+                    "date": aqi_date if not aqi_file else None  # Send date only if no file
                 }
                 response = requests.post("http://localhost:8000/aqi/query", json=payload)
                 result = response.json()
@@ -77,6 +79,7 @@ with tab1:
 
 with tab2:
     st.header("PDF Agent")
+    pdf_file = st.file_uploader("Upload PDF", type="pdf")
     pdf_question = st.text_input("Question about PDFs", "What are agent workflows and how to evaluate them?")
     pdf_top_k = st.number_input("Top K results", min_value=1, max_value=10, value=2)
     if st.button("Query PDFs", key="pdf_button"):
@@ -89,12 +92,17 @@ with tab2:
                     "top_k": pdf_top_k,
                     "llm_provider": llm_provider,
                     "model_name": model_name,
-                    "api_key": api_key
+                    "api_key": api_key,
+                    "pdf_file": pdf_file.read().decode("latin-1", errors="ignore") if pdf_file else None  # Send PDF content if uploaded
                 }
-                response = requests.post("http://localhost:8000/pdfs/query", json=payload)
-                result = response.json()
-                st.write("**Answer:**")
-                st.write(result.get("answer", "No answer provided"))
+                try:
+                    response = requests.post("http://localhost:8000/pdfs/query", json=payload)
+                    result = response.json()
+                    st.write("**Answer:**")
+                    st.write(result.get("answer", "No answer provided"))
+                except UnicodeDecodeError as e:
+                    st.error(f"Error decoding PDF file: {e}. Please ensure the PDF is properly encoded.")
+                    return
 
                 if result.get("citations"):
                     st.write("**Sources:**")
@@ -110,6 +118,7 @@ with tab2:
 
 with tab3:
     st.header("YouTube Agent")
+    youtube_file = st.file_uploader("Upload YouTube CSV", type="csv")
     yt_prompt = st.text_input("Prompt for YouTube script", "I want a video about building agent workflows for PDFs")
     yt_top_k = st.number_input("Top K recommendations", min_value=1, max_value=10, value=3)
     if st.button("Recommend YouTube Script", key="yt_button"):
@@ -122,7 +131,8 @@ with tab3:
                     "top_k": yt_top_k,
                     "llm_provider": llm_provider,
                     "model_name": model_name,
-                    "api_key": api_key
+                    "api_key": api_key,
+                    "youtube_file": youtube_file.read().decode("utf-8") if youtube_file else None  # Send CSV content if uploaded
                 }
                 response = requests.post("http://localhost:8000/youtube/recommend", json=payload)
                 result = response.json()
