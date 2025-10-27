@@ -95,14 +95,10 @@ with tab2:
                     "api_key": api_key,
                     "pdf_file": pdf_file.read().decode("latin-1", errors="ignore") if pdf_file else None  # Send PDF content if uploaded
                 }
-                try:
-                    response = requests.post("http://localhost:8000/pdfs/query", json=payload)
-                    result = response.json()
-                    st.write("**Answer:**")
-                    st.write(result.get("answer", "No answer provided"))
-                except UnicodeDecodeError as e:
-                    st.error(f"Error decoding PDF file: {e}. Please ensure the PDF is properly encoded.")
-                    return
+                response = requests.post("http://localhost:8000/pdfs/query", json=payload)
+                result = response.json()
+                st.write("**Answer:**")
+                st.write(result.get("answer", "No answer provided"))
 
                 if result.get("citations"):
                     st.write("**Sources:**")
